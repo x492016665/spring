@@ -20,7 +20,9 @@ import org.springframework.beans.BeansException;
 import org.springframework.core.ResolvableType;
 
 /**
+ *  访问spring bean 容器的根接口
  * The root interface for accessing a Spring bean container.
+ * 
  * This is the basic client view of a bean container;
  * further interfaces such as {@link ListableBeanFactory} and
  * {@link org.springframework.beans.factory.config.ConfigurableBeanFactory}

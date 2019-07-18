@@ -1,5 +1,6 @@
 buildscript {
 	repositories {
+		mavenLocal() // 新增
 		maven { url "https://repo.spring.io/plugins-release" }
 	}
 	dependencies {
