@@ -22,49 +22,67 @@ import org.springframework.core.ResolvableType;
 /**
  *  访问spring bean 容器的根接口
  * The root interface for accessing a Spring bean container.
- * 
+ * 这是bean容器的基础客户端视图
  * This is the basic client view of a bean container;
+ *其子接口例如：ListableBeanFactory，ConfigurableBeanFactory都有特殊的用途 
  * further interfaces such as {@link ListableBeanFactory} and
  * {@link org.springframework.beans.factory.config.ConfigurableBeanFactory}
  * are available for specific purposes.
- *
+ *这个接口被大量bean定义的对象实现
  * <p>This interface is implemented by objects that hold a number of bean definitions,
+ * 每一个都有字符名称唯一标识。依据bean的定义
  * each uniquely identified by a String name. Depending on the bean definition,
+ * 工厂将会返回任何一个包含对象的实例（原型设计模式）
  * the factory will return either an independent instance of a contained object
+ * 或者一个共享实例（对单例设计模式的最佳替代方案，其中的实例都是工厂范围的单例）
  * (the Prototype design pattern), or a single shared instance (a superior
  * alternative to the Singleton design pattern, in which the instance is a
+ * 那种类型的实例将会被返回取决于bean工厂的定义：api都是相同。
  * singleton in the scope of the factory). Which type of instance will be returned
  * depends on the bean factory configuration: the API is the same. Since Spring
+ * 自从spring2.0以后，根据具体的应用上下文（比如在web application context 可以或得更多的范围），
+ * 可以获得更多的范围（因为在spring1.0只提供了singleton和 prototype）
  * 2.0, further scopes are available depending on the concrete application
  * context (e.g. "request" and "session" scopes in a web environment).
- *
+ *这种方式的重点是beanfactory是一个中央的应用组件的注册表
  * <p>The point of this approach is that the BeanFactory is a central registry
+ * 也是应用组件的配置中心（例如单个对象不再需要读取属性文件）
  * of application components, and centralizes configuration of application
+ * （
  * components (no more do individual objects need to read properties files,
  * for example). See chapters 4 and 11 of "Expert One-on-One J2EE Design and
  * Development" for a discussion of the benefits of this approach.
- *
+ *注意通常情况下通过setter和构造方法的依赖注入来配置应用程序对象（"推"的配置）
  * <p>Note that it is generally better to rely on Dependency Injection
  * ("push" configuration) to configure application objects through setters
+ * 比使用任何形式的“拉”配置要要好很多，例如：beanFactory lookup。
  * or constructors, rather than use any form of "pull" configuration like a
+ *spring的依赖注入的功能是通过使用beanfactory接口和他的自接口实现的
  * BeanFactory lookup. Spring's Dependency Injection functionality is
  * implemented using this BeanFactory interface and its subinterfaces.
- *
+ *通常情况下一个beanfactory将会加载存储在一个配置源中bean的定义（例如：xml 文件），
  * <p>Normally a BeanFactory will load bean definitions stored in a configuration
+ * 或者使用org.springframework.beans 包来配置bean
  * source (such as an XML document), and use the {@code org.springframework.beans}
+ * 然而，一个实现可以简单的返回java对象，它的创建需要直接在java代码中。
  * package to configure the beans. However, an implementation could simply return
+ * 没有没有定义存储方式的限制，ldap，rdbms，xml等属性文件
  * Java objects it creates as necessary directly in Java code. There are no
  * constraints on how the definitions could be stored: LDAP, RDBMS, XML,
+ * 鼓励实现支持使用bean之前的引用，比如a 依赖 b 在创建a的时候后 首先会创建b
  * properties file, etc. Implementations are encouraged to support references
  * amongst beans (Dependency Injection).
- *
+ *  与ListableBeanFactory的方法做对比，这是HierarchicalBeanFactory所有在接口中的方法将会检查父factors如果
  * <p>In contrast to the methods in {@link ListableBeanFactory}, all of the
  * operations in this interface will also check parent factories if this is a
+ * 如果bena在不在factory实例中，直接parent factory 将会被调用。bean在当前工厂的实例
+ * 将会支持任何覆盖父工厂同名的bean
  * {@link HierarchicalBeanFactory}. If a bean is not found in this factory instance,
  * the immediate parent factory will be asked. Beans in this factory instance
  * are supposed to override beans of the same name in any parent factory.
- *
+ *bean工厂实现应该尽可能支持标准的bean生命周期接口
  * <p>Bean factory implementations should support the standard bean lifecycle interfaces
+ * 完整的初始化方法和他们标准的顺序
  * as far as possible. The full set of initialization methods and their standard order is:
  * <ol>
  * <li>BeanNameAware's {@code setBeanName}
