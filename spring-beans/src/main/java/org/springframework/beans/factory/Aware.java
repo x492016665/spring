@@ -34,6 +34,7 @@ package org.springframework.beans.factory;
  * @author Chris Beams
  * @since 3.1
  */
+//втЪЖ
 public interface Aware {
 
 }

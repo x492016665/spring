@@ -20,14 +20,19 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
+ * 输入流源的对象的简单接口
  * Simple interface for objects that are sources for an {@link InputStream}.
  *
+ *这是spring更广泛资源接口的基本接口
  * <p>This is the base interface for Spring's more extensive {@link Resource} interface.
- *
+ *用于一次性流，InputStreamResource 被用于任何给定的输入流
  * <p>For single-use streams, {@link InputStreamResource} can be used for any
+ * spring的ByteArrayResource或者任何基于资源文件实现的能被用于一个具体的实例
  * given {@code InputStream}. Spring's {@link ByteArrayResource} or any
  * file-based {@code Resource} implementation can be used as a concrete
+ * 允许一个用户多次读取底层的内容流
  * instance, allowing one to read the underlying content stream multiple times.
+ * 例如这使得这个接口作为一个针对的邮件附件的抽象内容源非常有用
  * This makes this interface useful as an abstract content source for mail
  * attachments, for example.
  *

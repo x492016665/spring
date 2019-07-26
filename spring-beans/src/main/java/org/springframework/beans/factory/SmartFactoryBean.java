@@ -38,6 +38,7 @@ package org.springframework.beans.factory;
  * @see #isPrototype()
  * @see #isSingleton()
  */
+//´ÏÃ÷µÄ
 public interface SmartFactoryBean<T> extends FactoryBean<T> {
 
 	/**

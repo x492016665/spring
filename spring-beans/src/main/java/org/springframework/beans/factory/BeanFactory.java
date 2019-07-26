@@ -135,20 +135,28 @@ import org.springframework.core.ResolvableType;
 public interface BeanFactory {
 
 	/**
+	 * 用于间接引用factoryBean的实例，并且与beanfactory创建的bean做区分
 	 * Used to dereference a {@link FactoryBean} instance and distinguish it from
+	 * 例如，如果bean名称为：myJndiObject是一个factorybean， getting("&myJndiObject")
 	 * beans <i>created</i> by the FactoryBean. For example, if the bean named
 	 * {@code myJndiObject} is a FactoryBean, getting {@code &myJndiObject}
+	 * 将会返回这个factory（即FactoryBean），并不是factory返回的实例。
 	 * will return the factory, not the instance returned by the factory.
 	 */
 	String FACTORY_BEAN_PREFIX = "&";
 
 
 	/**
+	 * 返回一个指定的bean实例，这个实例可能是共享的或者是独立的，
 	 * Return an instance, which may be shared or independent, of the specified bean.
+	 * 这个方法允许spring BeanFactory替代单利和原型设计模式
 	 * <p>This method allows a Spring BeanFactory to be used as a replacement for the
+	 * 在单利的情况下调用者可以保持返回对象的引用
 	 * Singleton or Prototype design pattern. Callers may retain references to
 	 * returned objects in the case of Singleton beans.
+	 * 将别名转换成相应规范的bean名称
 	 * <p>Translates aliases back to the corresponding canonical bean name.
+	 * 如果bean在当前工厂实例中没有找到，将会访问父工厂
 	 * Will ask the parent factory if the bean cannot be found in this factory instance.
 	 * @param name the name of the bean to retrieve
 	 * @return an instance of the bean
@@ -160,8 +168,11 @@ public interface BeanFactory {
 
 	/**
 	 * Return an instance, which may be shared or independent, of the specified bean.
+	 * 与getBean(String)的行为一直，但是提供了一个类型安全的机制，如果bean不是所需的类型将会
+	 * 抛出BeanNotOfRequiredTypeException
 	 * <p>Behaves the same as {@link #getBean(String)}, but provides a measure of type
 	 * safety by throwing a BeanNotOfRequiredTypeException if the bean is not of the
+	 * 这意味着在结果类型正确的情况下ClassCastException将不会被抛出，就像getbean一样。
 	 * required type. This means that ClassCastException can't be thrown on casting
 	 * the result correctly, as can happen with {@link #getBean(String)}.
 	 * <p>Translates aliases back to the corresponding canonical bean name.
@@ -179,9 +190,13 @@ public interface BeanFactory {
 	<T> T getBean(String name, Class<T> requiredType) throws BeansException;
 
 	/**
+	 * 如果有的话，返回唯一匹配给定对象类型bean的实例。
 	 * Return the bean instance that uniquely matches the given object type, if any.
+	 * 这个方法进入ListableBeanFactory，通过类型查找域，但是
+	 * 也可能被转换成传统的通过名称基于给定类型的名字进行查找
 	 * <p>This method goes into {@link ListableBeanFactory} by-type lookup territory
 	 * but may also be translated into a conventional by-name lookup based on the name
+	 * 对于大量跨bean集合的操作，使用ListableBeanFactory或者BeanFactoryUtils
 	 * of the given type. For more extensive retrieval operations across sets of beans,
 	 * use {@link ListableBeanFactory} and/or {@link BeanFactoryUtils}.
 	 * @param requiredType type the bean must match; can be an interface or superclass.
@@ -197,6 +212,7 @@ public interface BeanFactory {
 
 	/**
 	 * Return an instance, which may be shared or independent, of the specified bean.
+	 * 允许指定明确构造参数，工厂方法参数，在bean的定义中覆盖默认的参数（如果存在）
 	 * <p>Allows for specifying explicit constructor arguments / factory method arguments,
 	 * overriding the specified default arguments (if any) in the bean definition.
 	 * @param name the name of the bean to retrieve
@@ -234,14 +250,20 @@ public interface BeanFactory {
 
 
 	/**
+	 * 判断这个bean工厂是否包含一个bean的定义或者按照名称外部注册了单例的实例
 	 * Does this bean factory contain a bean definition or externally registered singleton
 	 * instance with the given name?
+	 * 如果给定的名称是一个别名，将会被转换成相应规范的bean 名称
 	 * <p>If the given name is an alias, it will be translated back to the corresponding
 	 * canonical bean name.
+	 * 如果这个工厂是分层的，在bean不在当前工厂实例的情况下将会在父工厂中查找
 	 * <p>If this factory is hierarchical, will ask any parent factory if the bean cannot
 	 * be found in this factory instance.
+	 * 如果bean的定义或者单例实例按指定名称的匹配被找到，
+	 * 在范围内无论这个bean的定义是具体的还是抽象，懒惰还是积极的，这个方法将会返回true。
 	 * <p>If a bean definition or singleton instance matching the given name is found,
 	 * this method will return {@code true} whether the named bean definition is concrete
+	 * 因此注意这个方法返回true，不一定表示getBean将会或者一个同名实例。
 	 * or abstract, lazy or eager, in scope or not. Therefore, note that a {@code true}
 	 * return value from this method does not necessarily indicate that {@link #getBean}
 	 * will be able to obtain an instance for the same name.

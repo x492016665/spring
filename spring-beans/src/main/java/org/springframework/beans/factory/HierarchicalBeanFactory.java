@@ -29,6 +29,7 @@ package org.springframework.beans.factory;
  * @since 07.07.2003
  * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#setParentBeanFactory
  */
+//·Ö²ãµÄBeanFactory
 public interface HierarchicalBeanFactory extends BeanFactory {
 
 	/**

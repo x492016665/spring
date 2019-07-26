@@ -55,6 +55,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
  * @see org.springframework.core.io.ResourceLoader
  */
 public interface ApplicationContext extends EnvironmentCapable, ListableBeanFactory, HierarchicalBeanFactory,
+		//¹ú¼Ê»¯
 		MessageSource, ApplicationEventPublisher, ResourcePatternResolver {
 
 	/**

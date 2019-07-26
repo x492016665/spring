@@ -17,31 +17,44 @@
 package org.springframework.beans.factory;
 
 /**
+ * 由beanfactory中使用的对象实现的接口，这些对象本身就是单个对象的工厂
  * Interface to be implemented by objects used within a {@link BeanFactory} which
+ * 如果一个bean实现了这个接口，它将被当做一个对象的公开的工厂。
  * are themselves factories for individual objects. If a bean implements this
+ * 不是直接作为一个将被公开的bean实例。
  * interface, it is used as a factory for an object to expose, not directly as a
  * bean instance that will be exposed itself.
- *
+ * 实现了当前接口的bean将不会作为普通的bean
  * <p><b>NB: A bean that implements this interface cannot be used as a normal bean.</b>
+ * 一个FactoryBean使用bean的方式被定义，但是由bean调用getObject()
+ * 公开出来的对象始终由他的工厂创建
  * A FactoryBean is defined in a bean style, but the object exposed for bean
  * references ({@link #getObject()}) is always the object that it creates.
- *
+ *  实际返回的实例是由其beanfactory创建出来的实例
+ * FactoryBean 支持单例和原型并且在后台懒加载或者启动加载。
  * <p>FactoryBeans can support singletons and prototypes, and can either create
  * objects lazily on demand or eagerly on startup. The {@link SmartFactoryBean}
+ * SmartFactoryBean接口允许暴露更细粒度行为的接口
  * interface allows for exposing more fine-grained behavioral metadata.
  *
+ *这个接口被框架本身大量的使用，例如AOP ProxyFactoryBean 或者 JndiObjectFactoryBean
  * <p>This interface is heavily used within the framework itself, for example for
  * the AOP {@link org.springframework.aop.framework.ProxyFactoryBean} or the
+ * 它也可以用来自定义组件；然而，这只在基础代码中常见
  * {@link org.springframework.jndi.JndiObjectFactoryBean}. It can be used for
  * custom components as well; however, this is only common for infrastructure code.
- *
+ * 
+ *FactoryBean是一个程序话的合同，实现不应该依赖于annotation驱动的注入或者其他反射工具
  * <p><b>{@code FactoryBean} is a programmatic contract. Implementations are not
  * supposed to rely on annotation-driven injection or other reflective facilities.</b>
+ * getObjectType，getObject 方法调用可能在比单独的线程早到达，甚至早于任何处理器设置之前
  * {@link #getObjectType()} {@link #getObject()} invocations may arrive early in
+ * 如果你需要接受其他的bean，实现BeanFactoryAware然后以编程方式或得他们
  * the bootstrap process, even ahead of any post-processor setup. If you need access
  * other beans, implement {@link BeanFactoryAware} and obtain them programmatically.
- *
+ *最后factorybean 对象参与包含BeanFactory的bean创建的同步
  * <p>Finally, FactoryBean objects participate in the containing BeanFactory's
+ * 通常不需要内部同步，除了在FactoryBean内部进行延迟初始化的目的外
  * synchronization of bean creation. There is usually no need for internal
  * synchronization other than for purposes of lazy initialization within the
  * FactoryBean itself (or the like).
